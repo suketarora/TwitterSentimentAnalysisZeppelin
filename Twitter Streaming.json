@@ -1,0 +1,726 @@
+{
+  "paragraphs": [
+    {
+      "text": "%spark.dep\n//z.reset() // clean up previously added artifact and repository\n// add artifact recursively\nz.load(\"org.twitter4j:twitter4j-core:4.0.4\")\nz.load(\"org.twitter4j:twitter4j-stream:4.0.4\")\nz.load(\"org.apache.bahir:spark-streaming-twitter_2.11:2.2.1\")",
+      "user": "anonymous",
+      "dateUpdated": "2018-11-13 14:02:51.227",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "res0: org.apache.zeppelin.dep.Dependency \u003d org.apache.zeppelin.dep.Dependency@17a20ae3\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1542087644834_-1217526968",
+      "id": "20181113-111044_1781166837",
+      "dateCreated": "2018-11-13 11:10:44.835",
+      "dateStarted": "2018-11-13 14:02:51.305",
+      "dateFinished": "2018-11-13 14:03:05.911",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import org.apache.spark.streaming._\nimport org.apache.spark.storage.StorageLevel\nimport scala.io.Source\nimport scala.collection.mutable.HashMap\nimport java.io.File\nimport org.apache.log4j.Logger\nimport org.apache.log4j.Level\nimport sys.process.stringSeqToProcess\nimport org.apache.spark.streaming.twitter._\n",
+      "user": "anonymous",
+      "dateUpdated": "2018-11-13 14:03:09.543",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "import org.apache.spark.streaming._\nimport org.apache.spark.storage.StorageLevel\nimport scala.io.Source\nimport scala.collection.mutable.HashMap\nimport java.io.File\nimport org.apache.log4j.Logger\nimport org.apache.log4j.Level\nimport sys.process.stringSeqToProcess\nimport org.apache.spark.streaming.twitter._\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1542087035569_-2033936539",
+      "id": "20181113-110035_2105716678",
+      "dateCreated": "2018-11-13 11:00:35.569",
+      "dateStarted": "2018-11-13 14:03:09.609",
+      "dateFinished": "2018-11-13 14:03:29.897",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "/** Configures the Oauth Credentials for accessing Twitter */\ndef configureTwitterCredentials(apiKey: String, apiSecret: String, accessToken: String, accessTokenSecret: String) {\n  val configs \u003d new HashMap[String, String] ++\u003d Seq(\n    \"apiKey\" -\u003e apiKey, \"apiSecret\" -\u003e apiSecret, \"accessToken\" -\u003e accessToken, \"accessTokenSecret\" -\u003e accessTokenSecret)\n  println(\"Configuring Twitter OAuth\")\n  configs.foreach{ case(key, value) \u003d\u003e\n    if (value.trim.isEmpty) {\n      throw new Exception(\"Error setting authentication - value for \" + key + \" not set\")\n    }\n    val fullKey \u003d \"twitter4j.oauth.\" + key.replace(\"api\", \"consumer\")\n    System.setProperty(fullKey, value.trim)\n    println(\"\\tProperty \" + fullKey + \" set as [\" + value.trim + \"]\")\n  }\n  println()\n}\n\n// Configure Twitter credentials\nval apiKey \u003d \"uMV8R8ijOAFzEH6XONOJ4MUto\"\nval apiSecret \u003d \"KdLwxBQiWcNEvKjm4lmTkGquvefiqC7HkCPdjdknjio3FVvQVK\"\nval accessToken \u003d \"2965768122-2GTtVaxVYHhX2ASM3OkJiTMkeTtJkyxoddvrTEq\"\nval accessTokenSecret \u003d \"jHAOvY765IdmxzPLn8gdLuWE5bWgnNTlNSwX1RGH5SMnY\"\nconfigureTwitterCredentials(apiKey, apiSecret, accessToken, accessTokenSecret)\n\nimport org.apache.spark.streaming.twitter._\nval ssc \u003d new StreamingContext(sc, Seconds(10))\n\n\n",
+      "user": "anonymous",
+      "dateUpdated": "2018-11-13 14:03:34.255",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "configureTwitterCredentials: (apiKey: String, apiSecret: String, accessToken: String, accessTokenSecret: String)Unit\napiKey: String \u003d uMV8R8ijOAFzEH6XONOJ4MUto\napiSecret: String \u003d KdLwxBQiWcNEvKjm4lmTkGquvefiqC7HkCPdjdknjio3FVvQVK\naccessToken: String \u003d 2965768122-2GTtVaxVYHhX2ASM3OkJiTMkeTtJkyxoddvrTEq\naccessTokenSecret: String \u003d jHAOvY765IdmxzPLn8gdLuWE5bWgnNTlNSwX1RGH5SMnY\nConfiguring Twitter OAuth\n\tProperty twitter4j.oauth.consumerKey set as [uMV8R8ijOAFzEH6XONOJ4MUto]\n\tProperty twitter4j.oauth.accessToken set as [2965768122-2GTtVaxVYHhX2ASM3OkJiTMkeTtJkyxoddvrTEq]\n\tProperty twitter4j.oauth.consumerSecret set as [KdLwxBQiWcNEvKjm4lmTkGquvefiqC7HkCPdjdknjio3FVvQVK]\n\tProperty twitter4j.oauth.accessTokenSecret set as [jHAOvY765IdmxzPLn8gdLuWE5bWgnNTlNSwX1RGH5SMnY]\n\nimport org.apache.spark.streaming.twitter._\nssc: org.apache.spark.streaming.StreamingContext \u003d org.apache.spark.streaming.StreamingContext@3f98f45f\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1542087178277_-2067993453",
+      "id": "20181113-110258_843829610",
+      "dateCreated": "2018-11-13 11:02:58.277",
+      "dateStarted": "2018-11-13 14:03:34.315",
+      "dateFinished": "2018-11-13 14:03:41.404",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "\nval tweets \u003d TwitterUtils.createStream(ssc,None)",
+      "user": "anonymous",
+      "dateUpdated": "2018-11-13 14:04:47.971",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "tweets: org.apache.spark.streaming.dstream.ReceiverInputDStream[twitter4j.Status] \u003d org.apache.spark.streaming.twitter.TwitterInputDStream@73d0feec\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1542088925584_-1549448602",
+      "id": "20181113-113205_1589066638",
+      "dateCreated": "2018-11-13 11:32:05.584",
+      "dateStarted": "2018-11-13 14:04:48.020",
+      "dateFinished": "2018-11-13 14:04:50.154",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val twt \u003d tweets.window(Seconds(60))\ncase class Tweet(createdAt:Long, text:String)\ntwt.map(status\u003d\u003e\n  Tweet(status.getCreatedAt().getTime()/1000, status.getText())\n).foreachRDD(\n    rdd\u003d\u003erdd.toDF().registerTempTable(\"tweets\")\n)\n\ntwt.print\n\nssc.start()\n",
+      "user": "anonymous",
+      "dateUpdated": "2018-11-13 14:04:53.019",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "twt: org.apache.spark.streaming.dstream.DStream[twitter4j.Status] \u003d org.apache.spark.streaming.dstream.WindowedDStream@6673e93b\ndefined class Tweet\nwarning: there was one deprecation warning; re-run with -deprecation for details\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1542088814041_2083804332",
+      "id": "20181113-113014_1751541069",
+      "dateCreated": "2018-11-13 11:30:14.041",
+      "dateStarted": "2018-11-13 14:04:53.054",
+      "dateFinished": "2018-11-13 14:04:59.558",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%sql \nselect * from tweets where text like \u0027%girl%\u0027 limit 10",
+      "user": "anonymous",
+      "dateUpdated": "2018-11-13 14:05:28.496",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "createdAt": "string",
+                      "text": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                }
+              },
+              "commonSetting": {}
+            }
+          }
+        },
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/sql"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "createdAt\ttext\n1542098107\t#Elegantlauren, 31yo #camgirl Curvaceous body, 91C tits, Brown eyes and Brown hair from BG. https://t.co/dmT6MGMCPy\n1542098107\t#Elegantlauren, 31yo #camgirl Curvaceous body, 91C tits, Brown eyes and Brown hair from BG. https://t.co/dmT6MGMCPy\n1542098109\tRT @lagiorgia78: Un bacione agli amici di web. best.girls di IG https://t.co/jp0Zwhd0Ya\n1542098109\tRT @lagiorgia78: Un bacione agli amici di web. best.girls di IG https://t.co/jp0Zwhd0Ya\n1542098109\tRT @lagiorgia78: Un bacione agli amici di web. best.girls di IG https://t.co/jp0Zwhd0Ya\n1542098109\tRT @lagiorgia78: Un bacione agli amici di web. best.girls di IG https://t.co/jp0Zwhd0Ya\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1542089315646_-292179440",
+      "id": "20181113-113835_1236876632",
+      "dateCreated": "2018-11-13 11:38:35.646",
+      "dateStarted": "2018-11-13 14:05:28.535",
+      "dateFinished": "2018-11-13 14:05:29.612",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%sql\nselect createdAt, count(1) from tweets group by createdAt order by createdAt",
+      "user": "anonymous",
+      "dateUpdated": "2018-11-15 11:24:24.731",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "multiBarChart",
+              "height": 300.0,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "createdAt": "string",
+                      "count(1)": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                },
+                "multiBarChart": {
+                  "rotate": {
+                    "degree": "-45"
+                  },
+                  "xLabelStatus": "default"
+                }
+              },
+              "commonSetting": {},
+              "keys": [
+                {
+                  "name": "createdAt",
+                  "index": 0.0,
+                  "aggr": "sum"
+                }
+              ],
+              "groups": [],
+              "values": [
+                {
+                  "name": "count(1)",
+                  "index": 1.0,
+                  "aggr": "sum"
+                }
+              ]
+            },
+            "helium": {}
+          }
+        },
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/sql"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "createdAt\tcount(1)\n1542098100\t38\n1542098101\t80\n1542098102\t82\n1542098103\t60\n1542098104\t78\n1542098105\t86\n1542098106\t60\n1542098107\t62\n1542098108\t47\n1542098109\t68\n1542098110\t60\n1542098111\t80\n1542098112\t108\n1542098113\t66\n1542098114\t70\n1542098115\t51\n1542098116\t52\n1542098117\t48\n1542098118\t86\n1542098119\t90\n1542098120\t86\n1542098121\t88\n1542098122\t84\n1542098123\t49\n1542098124\t54\n1542098125\t60\n1542098126\t54\n1542098127\t62\n1542098128\t48\n1542098129\t40\n1542098130\t62\n1542098131\t38\n1542098132\t72\n1542098133\t36\n1542098134\t71\n1542098135\t46\n1542098136\t58\n1542098137\t38\n1542098138\t38\n1542098139\t70\n1542098140\t52\n1542098141\t54\n1542098142\t70\n1542098143\t58\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1542089758568_-1531934156",
+      "id": "20181113-114558_1521389774",
+      "dateCreated": "2018-11-13 11:45:58.568",
+      "dateStarted": "2018-11-13 14:05:54.641",
+      "dateFinished": "2018-11-13 14:05:59.092",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%sql\nselect count(*) from tweets",
+      "user": "anonymous",
+      "dateUpdated": "2018-11-13 12:05:04.394",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "count(1)": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                }
+              },
+              "commonSetting": {}
+            }
+          }
+        },
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/sql"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "count(1)\n3363\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1542089842681_-225648098",
+      "id": "20181113-114722_1285561766",
+      "dateCreated": "2018-11-13 11:47:22.682",
+      "dateStarted": "2018-11-13 12:05:04.560",
+      "dateFinished": "2018-11-13 12:05:10.854",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "\n%sql\nselect count(*) from tweets",
+      "user": "anonymous",
+      "dateUpdated": "2018-11-13 12:05:56.749",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "count(1)": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                }
+              },
+              "commonSetting": {}
+            }
+          }
+        },
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/sql"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "count(1)\n3445\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1542090933541_-1380574506",
+      "id": "20181113-120533_314063319",
+      "dateCreated": "2018-11-13 12:05:33.541",
+      "dateStarted": "2018-11-13 12:05:56.937",
+      "dateFinished": "2018-11-13 12:06:02.807",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "val sentiment  \u003d (s:String) \u003d\u003e {\n    val positive \u003d Array(\"like\", \"love\", \"good\", \"great\", \"happy\", \"cool\", \"the\", \"one\", \"that\")\n    val negative \u003d Array(\"hate\", \"bad\", \"stupid\", \"is\",\"fu*k\",\"fuck\",\"f**k\")\n\n    var st \u003d 0;\n\n    val words \u003d s.split(\" \")    \n    positive.foreach(p \u003d\u003e\n        words.foreach(w \u003d\u003e\n            if(p\u003d\u003dw) st \u003d st+1\n        )\n    )\n\n    negative.foreach(p\u003d\u003e\n        words.foreach(w\u003d\u003e\n            if(p\u003d\u003dw) st \u003d st-1\n        )\n    )\n    if(st\u003e0)\n        \"positivie\"\n    else if(st\u003c0)\n        \"negative\"\n    else\n        \"neutral\"\n}\nspark.sqlContext.udf.register(\"sentiment\", sentiment)\n",
+      "user": "anonymous",
+      "dateUpdated": "2018-11-13 14:06:11.552",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "sentiment: String \u003d\u003e String \u003d \u003cfunction1\u003e\nres14: org.apache.spark.sql.expressions.UserDefinedFunction \u003d UserDefinedFunction(\u003cfunction1\u003e,StringType,Some(List(StringType)))\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1542090354704_-1225012743",
+      "id": "20181113-115554_1641394022",
+      "dateCreated": "2018-11-13 11:55:54.704",
+      "dateStarted": "2018-11-13 14:06:11.585",
+      "dateFinished": "2018-11-13 14:06:14.434",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%sql\nselect sentiment(text), count(1) from tweets  group by sentiment(text)",
+      "user": "anonymous",
+      "dateUpdated": "2018-11-13 14:10:57.844",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "UDF:sentiment(text)": "string",
+                      "count(1)": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                }
+              },
+              "commonSetting": {}
+            }
+          }
+        },
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/sql"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "UDF:sentiment(text)\tcount(1)\nneutral\t3256\nnegative\t68\npositivie\t267\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1542094171500_1954406078",
+      "id": "20181113-125931_1165194130",
+      "dateCreated": "2018-11-13 12:59:31.500",
+      "dateStarted": "2018-11-13 14:10:57.875",
+      "dateFinished": "2018-11-13 14:11:02.012",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%sql\nselect *,sentiment(text) from tweets where text like \u0027%girl%\u0027 ",
+      "user": "anonymous",
+      "dateUpdated": "2018-11-13 14:15:42.382",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "table",
+              "height": 300.0,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "createdAt": "string",
+                      "text": "string",
+                      "UDF:sentiment(text)": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                }
+              },
+              "commonSetting": {}
+            }
+          }
+        },
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/sql"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "createdAt\ttext\tUDF:sentiment(text)\n1542098617\tRT @RealPaigeWWE: Those are my girls. #SDLive brought it on #Raw and we’re ready for #SurvivorSeries!\tneutral\n1542098617\tRT @RealPaigeWWE: Those are my girls. #SDLive brought it on #Raw and we’re ready for #SurvivorSeries!\tneutral\n1542098618\tRT @blkgirlculture: Michelle Obama for ELLE’s December Issue https://t.co/O1n3keQuAz\tneutral\n1542098618\tRT @blkgirlculture: Michelle Obama for ELLE’s December Issue https://t.co/O1n3keQuAz\tneutral\n1542098629\tRT @PDeplorablegirl: We need Someone that will step up and Do the Job they have been put in position to do. If he is going to recuse from a…\tpositivie\n1542098629\tRT @PDeplorablegirl: We need Someone that will step up and Do the Job they have been put in position to do. If he is going to recuse from a…\tpositivie\n1542098635\tRT @avawoods14: a girl in sephora walked past me yesterday \u0026 she said to her friend \"if it\u0027s not jeffree star approved i won\u0027t buy it\" \u0026 i…\tneutral\n1542098635\tRT @avawoods14: a girl in sephora walked past me yesterday \u0026 she said to her friend \"if it\u0027s not jeffree star approved i won\u0027t buy it\" \u0026 i…\tneutral\n1542098658\tRT @RaniAnkita: Become a girl \nJoin my sissy course #findom #femdom https://t.co/bFQcXz8J57\tneutral\n1542098658\tRT @RaniAnkita: Become a girl \nJoin my sissy course #findom #femdom https://t.co/bFQcXz8J57\tneutral\n1542098662\tRT @fucklexuz: your girlfriend tweeting about how nobody care about her again\tneutral\n1542098662\tRT @fucklexuz: your girlfriend tweeting about how nobody care about her again\tneutral\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1542098369641_1034411000",
+      "id": "20181113-140929_1934463831",
+      "dateCreated": "2018-11-13 14:09:29.641",
+      "dateStarted": "2018-11-13 14:14:33.177",
+      "dateFinished": "2018-11-13 14:14:35.342",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "ssc.stop()\n",
+      "user": "anonymous",
+      "dateUpdated": "2018-11-13 14:14:59.459",
+      "config": {
+        "colWidth": 12.0,
+        "fontSize": 9.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "jobName": "paragraph_1542094719584_54401841",
+      "id": "20181113-130839_297347546",
+      "dateCreated": "2018-11-13 13:08:39.584",
+      "dateStarted": "2018-11-13 14:14:59.499",
+      "dateFinished": "2018-11-13 14:15:10.409",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "user": "anonymous",
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1542098699459_67426292",
+      "id": "20181113-141459_1961609945",
+      "dateCreated": "2018-11-13 14:14:59.459",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "Twitter Streaming",
+  "id": "2DXB5FMX1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {
+    "spark:shared_process": []
+  },
+  "config": {
+    "isZeppelinNotebookCronEnable": false
+  },
+  "info": {}
+}
